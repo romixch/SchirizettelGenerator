@@ -13,11 +13,12 @@
     <property name="imageDPI">96</property>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.datatools.connectivity.oda.flatfile" name="FlatDatasource" id="95">
-            <property name="HOME">/home/roman/Eclipse/Javagon/workspace/SchiriZettel</property>
+            <property name="URI">DataSource.csv</property>
             <property name="DELIMTYPE">COMMA</property>
             <property name="CHARSET">UTF-8</property>
             <property name="INCLCOLUMNNAME">YES</property>
             <property name="INCLTYPELINE">NO</property>
+            <property name="TRAILNULLCOLS">NO</property>
         </oda-data-source>
     </data-sources>
     <data-sets>

@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.21" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 2.5.2.v20100208 Build &lt;2.5.2.v20100210-0630></property>
-    <property name="units">in</property>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.4.0.v201405191524 Build &lt;4.4.0.v20140606-1451></property>
     <list-property name="propertyBindings">
         <structure>
             <property name="name">queryText</property>
             <property name="id">96</property>
         </structure>
     </list-property>
+    <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">96</property>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.datatools.connectivity.oda.flatfile" name="FlatDatasource" id="95">
-            <property name="HOME">/home/roman/Eclipse/Javagon/workspace/SchiriZettel</property>
+            <property name="URI">DataSource.csv</property>
             <property name="DELIMTYPE">COMMA</property>
             <property name="CHARSET">UTF-8</property>
             <property name="INCLCOLUMNNAME">YES</property>
             <property name="INCLTYPELINE">NO</property>
+            <property name="TRAILNULLCOLS">NO</property>
         </oda-data-source>
     </data-sources>
     <data-sets>
