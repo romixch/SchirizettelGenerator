@@ -3,3 +3,6 @@
 /DataSource.csv
 /.settings
 /bin
+/ReportEngine*.log
+/test.pdf
+/ReportEngine*.log.lck
