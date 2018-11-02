@@ -6,3 +6,5 @@
 /ReportEngine*.log
 /test.pdf
 /ReportEngine*.log.lck
+/out
+\.idea/
