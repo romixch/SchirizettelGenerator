@@ -2,9 +2,10 @@
 /testbin
 /DataSource.csv
 /.settings
-/bin
+/build
 /ReportEngine*.log
 /test.pdf
 /ReportEngine*.log.lck
 /out
 \.idea/
+/.gradle
