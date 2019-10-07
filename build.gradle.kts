@@ -2,6 +2,7 @@
 plugins {
     java
     id("application")
+    id("com.palantir.graal") version "0.6.0-14-g6fa0c0a"
 }
 
 java {
@@ -27,6 +28,11 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest:2.1")
+}
+
+graal {
+    outputName("schirizettelGenerator")
+    mainClass("ch.romix.schirizettel.generator.GeneratorGUI")
 }
 
 application {
