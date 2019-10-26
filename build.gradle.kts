@@ -1,8 +1,8 @@
 
 plugins {
     java
-    id("application")
     id("com.palantir.graal") version "0.6.0-14-g6fa0c0a"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 java {
@@ -30,11 +30,8 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest:2.1")
 }
 
+// This only works for Linux. It creates an executable binary file.
 graal {
     outputName("schirizettelGenerator")
     mainClass("ch.romix.schirizettel.generator.GeneratorGUI")
-}
-
-application {
-    mainClassName = "ch.romix.schirizettel.generator.GeneratorGUI"
 }
