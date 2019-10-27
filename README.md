@@ -4,7 +4,7 @@ Diese Applikation hilft dir beim Erstellen von Korbball-Resultate-Zettel.
 Als Voraussetzung muss Java ab der Version 8 installiert sein. Um die
 Resultate-Zettel zu erstellen, lade das neuste Release hier herunter:
 (https://github.com/romixch/SchirizettelGenerator/releases).
-Wenn du schon Java 8 oder höher installiert hast, kannst du einfach die Datei doppelklicken.
+Entpacke die Zip-Datei und starte die Applikation im `bin`-Verzeichnis.
 
 Ein Fenster öffnet sich. Darin kannst du folgende drei Dinge
 auswählen:
