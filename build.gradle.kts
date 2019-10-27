@@ -3,7 +3,6 @@ plugins {
     java
     id("application")
     id("com.palantir.graal") version "0.6.0-14-g6fa0c0a"
-    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 java {
@@ -24,6 +23,7 @@ repositories {
 dependencies {
     implementation("org.eclipse.birt.runtime:org.eclipse.birt.runtime:4.3.1") {
         exclude("org.milyn", "flute")
+        exclude("org.eclipse.birt.runtim", "org.eclipse.orbit.mongodb")
     }
     implementation("com.opencsv:opencsv:4.6")
 
@@ -33,6 +33,14 @@ dependencies {
 
 application {
     mainClassName = "ch.romix.schirizettel.generator.GeneratorGUI"
+}
+
+tasks.withType<CreateStartScripts>(CreateStartScripts::class.java) {
+    doLast {
+        var text = windowsScript.readText()
+        text = text.replaceFirst(Regex("(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*"), "set CLASSPATH=%APP_HOME%\\\\lib\\\\*")
+        windowsScript.writeText(text)
+    }
 }
 
 // This only works for Linux. It creates an executable binary file.
