@@ -1,6 +1,7 @@
 
 plugins {
     java
+    id("application")
     id("com.palantir.graal") version "0.6.0-14-g6fa0c0a"
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
@@ -28,6 +29,10 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest:2.1")
+}
+
+application {
+    mainClassName = "ch.romix.schirizettel.generator.GeneratorGUI"
 }
 
 // This only works for Linux. It creates an executable binary file.
