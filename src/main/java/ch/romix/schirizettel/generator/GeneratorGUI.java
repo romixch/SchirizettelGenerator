@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,7 +26,6 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.eclipse.birt.core.exception.BirtException;
 
 public class GeneratorGUI {
 
@@ -37,7 +35,6 @@ public class GeneratorGUI {
   private FileComponents reportComponents;
   private FileComponents dataComponents;
   private FileComponents fileComponents;
-  private Generator generator;
   private ITextGenerator iTextGenerator;
   private JButton generateButton;
   private JProgressBar progressBar;
@@ -63,7 +60,6 @@ public class GeneratorGUI {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     layout();
     frame.setVisible(true);
-    asynchronouslyStartGenerator();
   }
 
   private void layout() {
@@ -255,35 +251,5 @@ public class GeneratorGUI {
       iTextGenerator = new ITextGenerator(progressBar.getModel());
     }
     return iTextGenerator;
-  }
-
-  private Generator getGenerator() throws InterruptedException {
-    return generator;
-  }
-
-  private void asynchronouslyStartGenerator() {
-    progressBar.setStringPainted(true);
-    progressBar.setString("Starte Report Generator...");
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        try {
-          generator = new Generator(progressBar.getModel());
-          updateProgressbarInUIThread();
-        } catch (BirtException e) {
-          e.printStackTrace();
-        }
-      }
-
-      private void updateProgressbarInUIThread() {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            progressBar.setString("Report Generator bereit.");
-          }
-        });
-      }
-    };
-    executor.execute(runnable);
   }
 }
