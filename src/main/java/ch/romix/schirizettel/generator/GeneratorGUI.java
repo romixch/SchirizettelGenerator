@@ -1,8 +1,10 @@
 package ch.romix.schirizettel.generator;
 
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -10,13 +12,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
@@ -24,17 +27,18 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.eclipse.birt.core.exception.BirtException;
 
 public class GeneratorGUI {
 
   private JFrame frame;
 
+  private JLabel title;
   private FileComponents reportComponents;
   private FileComponents dataComponents;
   private FileComponents fileComponents;
   private Generator generator;
+  private ITextGenerator iTextGenerator;
   private JButton generateButton;
   private JProgressBar progressBar;
   private ExecutorService executor;
@@ -49,7 +53,8 @@ public class GeneratorGUI {
     executor = Executors.newFixedThreadPool(1);
     chooseLookAndFeel();
     frame = new JFrame("Schirizettel Generator");
-    frame.setSize(800, 200);
+    frame.setSize(800, 600);
+    createTitle();
     createReportFile();
     createDataFile();
     createOutputFile();
@@ -66,19 +71,24 @@ public class GeneratorGUI {
     Container pane = frame.getContentPane();
     pane.setLayout(layout);
 
-    pane.add(reportComponents.getLabel(), makeGBC(0, 0, GridBagConstraints.NONE, 0));
-    pane.add(reportComponents.getFileText(), makeGBC(1, 0, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(reportComponents.getChooseButton(), makeGBC(2, 0, GridBagConstraints.NONE, 0));
+    GridBagConstraints titleGBC = makeGBC(0, 0, GridBagConstraints.BOTH, 3);
+    titleGBC.gridwidth = 3;
+    titleGBC.insets = new Insets(10,0,10,0);
+    pane.add(title, titleGBC);
 
-    pane.add(dataComponents.getLabel(), makeGBC(0, 1, GridBagConstraints.NONE, 0));
-    pane.add(dataComponents.getFileText(), makeGBC(1, 1, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(dataComponents.getChooseButton(), makeGBC(2, 1, GridBagConstraints.NONE, 0));
+    pane.add(reportComponents.getLabel(), makeGBC(0, 1, GridBagConstraints.NONE, 0));
+    pane.add(reportComponents.getFileText(), makeGBC(1, 1, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(reportComponents.getChooseButton(), makeGBC(2, 1, GridBagConstraints.NONE, 0));
 
-    pane.add(fileComponents.getLabel(), makeGBC(0, 2, GridBagConstraints.NONE, 0));
-    pane.add(fileComponents.getFileText(), makeGBC(1, 2, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(fileComponents.getChooseButton(), makeGBC(2, 2, GridBagConstraints.NONE, 0));
+    pane.add(dataComponents.getLabel(), makeGBC(0, 2, GridBagConstraints.NONE, 0));
+    pane.add(dataComponents.getFileText(), makeGBC(1, 2, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(dataComponents.getChooseButton(), makeGBC(2, 2, GridBagConstraints.NONE, 0));
 
-    GridBagConstraints gbc = makeGBC(0, 3, GridBagConstraints.BOTH, 1);
+    pane.add(fileComponents.getLabel(), makeGBC(0, 3, GridBagConstraints.NONE, 0));
+    pane.add(fileComponents.getFileText(), makeGBC(1, 3, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(fileComponents.getChooseButton(), makeGBC(2, 3, GridBagConstraints.NONE, 0));
+
+    GridBagConstraints gbc = makeGBC(0, 4, GridBagConstraints.BOTH, 1);
     gbc.gridwidth = 3;
     pane.add(generateButton, gbc);
     gbc.gridy++;
@@ -91,6 +101,7 @@ public class GeneratorGUI {
     gbc.gridy = gridy;
     gbc.weightx = weightx;
     gbc.fill = fill;
+    gbc.insets = new Insets(5,5,5,5);
     return gbc;
   }
 
@@ -123,13 +134,19 @@ public class GeneratorGUI {
     }
   }
 
+  private void createTitle() {
+    title = new JLabel("Schirizettel Generator", JLabel.CENTER);
+    Font font = title.getFont();
+    title.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 3));
+  }
+
   private void createReportFile() {
     reportComponents = new FileComponents();
     reportComponents.setDialogParent(frame);
-    reportComponents.setLabelText("Report (*.rptdesign): ");
-    reportComponents.setFileFilter(new FileNameExtensionFilter("BIRT-Reports", "rptdesign"));
+    reportComponents.setLabelText("PDF Formular (*.pdf): ");
+    reportComponents.setFileFilter(new FileNameExtensionFilter("PDF Formular", "pdf"));
     reportComponents.createComponents();
-    reportComponents.setFile(Paths.get("", "schirizettel.rptdesign").toAbsolutePath().toFile());
+    reportComponents.setFile(Paths.get("./src/main/resources", "Vorlage.pdf").toAbsolutePath().toFile());
   }
 
   private void createDataFile() {
@@ -194,12 +211,13 @@ public class GeneratorGUI {
     Runnable runnable = new Runnable() {
       public void run() {
         try {
-          Generator generator = getGenerator();
-          generator.setDataStream(new FileInputStream(dataFile));
-          generator.setTemplate(new FileInputStream(reportFile));
-          generator.setOutput(new FileOutputStream(outputFile));
-          generator.runReport();
+          ITextGenerator iTextGenerator = getITextGenerator();
+          iTextGenerator.setDataStream(new FileInputStream(dataFile));
+          iTextGenerator.setTemplate(reportFile.toURI());
+          iTextGenerator.setOutput(new FileOutputStream(outputFile));
+          iTextGenerator.runReport();
           setProgressbarFinished();
+
         } catch (Exception e) {
           setProgressbarError(e);
         }
@@ -230,6 +248,13 @@ public class GeneratorGUI {
             + writer.toString(), frame.getTitle(), JOptionPane.ERROR_MESSAGE);
       }
     });
+  }
+
+  private ITextGenerator getITextGenerator() {
+    if (iTextGenerator == null) {
+      iTextGenerator = new ITextGenerator(progressBar.getModel());
+    }
+    return iTextGenerator;
   }
 
   private Generator getGenerator() throws InterruptedException {

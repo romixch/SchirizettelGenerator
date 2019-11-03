@@ -18,7 +18,7 @@ public class DataTransformer {
             String[] newHeader = createNewHeader(lines.get(0));
             int origWidth = lines.get(0).length;
             int lineCountWithoutHeader = lines.size() - 1;
-            int newLineCount = lineCountWithoutHeader / 3 + 1;
+            int newLineCount = (int) Math.ceil((double) lineCountWithoutHeader / 3.0);
             addTwoEmptyLines(lines, origWidth);
             csvWriter.writeNext(newHeader);
             for (int line = 0; line < newLineCount; line++) {

@@ -25,6 +25,7 @@ dependencies {
         exclude("org.milyn", "flute")
         exclude("org.eclipse.birt.runtim", "org.eclipse.orbit.mongodb")
     }
+    implementation("com.itextpdf:itextpdf:5.5.13.1")
     implementation("com.opencsv:opencsv:4.6")
 
     testImplementation("junit:junit:4.12")
