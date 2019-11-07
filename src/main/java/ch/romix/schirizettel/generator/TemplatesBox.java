@@ -33,13 +33,19 @@ public class TemplatesBox extends JPanel implements ActionListener {
     templateButtonGroup.add(standardButton);
     standardButton.setActionCommand("Vorlage.pdf");
     standardButton.addActionListener(this);
+    add(standardButton);
+
+    JRadioButton simpleButton = new JRadioButton("Simple Vorlage", false);
+    templateButtonGroup.add(simpleButton);
+    simpleButton.setActionCommand("VorlageSimpel.pdf");
+    simpleButton.addActionListener(this);
+    add(simpleButton);
 
     JButton ownButton = new JButton("Eigene Vorlage wählen");
     templateButtonGroup.add(ownButton);
     ownButton.setActionCommand("");
     ownButton.addActionListener(this);
 
-    add(standardButton);
     add(ownButton);
     fireTemplateChanged(standardButton.getActionCommand());
   }
