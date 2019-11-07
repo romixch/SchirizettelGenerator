@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoundedRangeModel;
@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
 
 public class ITextGenerator {
 
-  private URI templateURI;
+  private URL templateURL;
   private OutputStream outputStream;
   private InputStream dataStream;
   private File datasource;
@@ -36,8 +36,8 @@ public class ITextGenerator {
     datasource = new File(System.getProperty("user.dir"), "DataSource.csv");
   }
 
-  public void setTemplate(URI templateURI) {
-    this.templateURI = templateURI;
+  public void setTemplate(URL templateURL) {
+    this.templateURL = templateURL;
   }
 
   public void setDataStream(InputStream dataStream) {
@@ -76,7 +76,7 @@ public class ITextGenerator {
       tempPdf.deleteOnExit();
       try (OutputStream outputStream = new FileOutputStream(tempPdf)) {
 
-        PdfReader pdfReader = new PdfReader(templateURI.toURL().openStream());
+        PdfReader pdfReader = new PdfReader(templateURL.openStream());
         PdfStamper pdfStamper = new PdfStamper(pdfReader, outputStream);
         AcroFields form = pdfStamper.getAcroFields();
         form.setGenerateAppearances(true);
@@ -95,7 +95,7 @@ public class ITextGenerator {
   }
 
   private void mergePages(List<File> pages) throws DocumentException, IOException {
-    PdfReader pdfReader = new PdfReader(templateURI.toURL().openStream());
+    PdfReader pdfReader = new PdfReader(templateURL.openStream());
     Rectangle originalPageSize = pdfReader.getPageSize(1);
     pdfReader.close();
 

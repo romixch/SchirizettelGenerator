@@ -5,27 +5,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Paths;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 public class FileComponents {
-	private JLabel label;
 	private JTextField fileText;
 	private JButton chooseButton;
 	private Component dialogParent;
 	private FileFilter fileFilter;
-	private String labelText;
 
 	public void setFileFilter(FileFilter fileFilter) {
 		this.fileFilter = fileFilter;
-	}
-
-	public void setLabelText(String labelText) {
-		this.labelText = labelText;
 	}
 
 	public void setDialogParent(Component dialogParent) {
@@ -37,19 +29,14 @@ public class FileComponents {
 	}
 
 	public void createComponents() {
-		label = new JLabel(labelText);
 		fileText = new JTextField();
-		chooseButton = new JButton("Datei suchen...");
+		chooseButton = new JButton("Datei öffnen...");
 		chooseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				chooseFile();
 			}
 		});
-	}
-
-	public JLabel getLabel() {
-		return label;
 	}
 
 	public JTextField getFileText() {

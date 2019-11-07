@@ -1,5 +1,6 @@
 package ch.romix.schirizettel.generator;
 
+import ch.romix.schirizettel.generator.TemplatesBox.TemplateListener;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -12,7 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.DefaultBoundedRangeModel;
@@ -31,8 +32,7 @@ public class GeneratorGUI {
 
   private JFrame frame;
 
-  private JLabel title;
-  private FileComponents reportComponents;
+  TemplatesBox templatesBox;
   private FileComponents dataComponents;
   private FileComponents fileComponents;
   private ITextGenerator iTextGenerator;
@@ -40,19 +40,13 @@ public class GeneratorGUI {
   private JProgressBar progressBar;
   private ExecutorService executor;
 
-  public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException, UnsupportedLookAndFeelException {
-    new GeneratorGUI();
-  }
-
   public GeneratorGUI() throws ClassNotFoundException, InstantiationException,
       IllegalAccessException, UnsupportedLookAndFeelException {
     executor = Executors.newFixedThreadPool(1);
     chooseLookAndFeel();
     frame = new JFrame("Schirizettel Generator");
-    frame.setSize(800, 600);
+    frame.setSize(800, 700);
     createTitle();
-    createReportFile();
     createDataFile();
     createOutputFile();
     createGenerateButton();
@@ -62,33 +56,70 @@ public class GeneratorGUI {
     frame.setVisible(true);
   }
 
+  public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
+      IllegalAccessException, UnsupportedLookAndFeelException {
+    new GeneratorGUI();
+  }
+
   private void layout() {
     GridBagLayout layout = new GridBagLayout();
     Container pane = frame.getContentPane();
     pane.setLayout(layout);
+    int gridy = 0;
 
-    GridBagConstraints titleGBC = makeGBC(0, 0, GridBagConstraints.BOTH, 3);
+    GridBagConstraints titleGBC = makeGBC(0, gridy, GridBagConstraints.BOTH, 1);
     titleGBC.gridwidth = 3;
-    titleGBC.insets = new Insets(10,0,10,0);
-    pane.add(title, titleGBC);
+    titleGBC.insets = new Insets(10, 0, 10, 0);
+    pane.add(createTitle(), titleGBC);
 
-    pane.add(reportComponents.getLabel(), makeGBC(0, 1, GridBagConstraints.NONE, 0));
-    pane.add(reportComponents.getFileText(), makeGBC(1, 1, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(reportComponents.getChooseButton(), makeGBC(2, 1, GridBagConstraints.NONE, 0));
+    gridy++;
+    JLabel templateHeader = createHeading("1. Wähle deine Vorlage:");
+    pane.add(templateHeader, makeHeadingGBC(0, gridy));
 
-    pane.add(dataComponents.getLabel(), makeGBC(0, 2, GridBagConstraints.NONE, 0));
-    pane.add(dataComponents.getFileText(), makeGBC(1, 2, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(dataComponents.getChooseButton(), makeGBC(2, 2, GridBagConstraints.NONE, 0));
+    gridy++;
+    ShippedTemplatesGUI shippedTemplatesGUI = new ShippedTemplatesGUI();
+    templatesBox = new TemplatesBox(new TemplateListener() {
+      @Override
+      public void onTemplateChanged(URL url) {
+        shippedTemplatesGUI.loadTemplate(url);
+      }
+    });
+    pane.add(templatesBox, makeGBC(0, gridy, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(shippedTemplatesGUI, makeGBC(1, gridy, GridBagConstraints.BOTH, 1));
 
-    pane.add(fileComponents.getLabel(), makeGBC(0, 3, GridBagConstraints.NONE, 0));
-    pane.add(fileComponents.getFileText(), makeGBC(1, 3, GridBagConstraints.HORIZONTAL, 1));
-    pane.add(fileComponents.getChooseButton(), makeGBC(2, 3, GridBagConstraints.NONE, 0));
+    gridy++;
+    JLabel datasourceHeader = createHeading("2. Bestimme die Datenquelle (csv-Datei):");
+    pane.add(datasourceHeader, makeHeadingGBC(0, gridy));
 
-    GridBagConstraints gbc = makeGBC(0, 4, GridBagConstraints.BOTH, 1);
+    gridy++;
+    pane.add(dataComponents.getFileText(), makeGBC(0, gridy, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(dataComponents.getChooseButton(), makeGBC(1, gridy, GridBagConstraints.NONE, 0));
+
+    gridy++;
+    JLabel outputHeader = createHeading("3. Wähle, wohin die PDF-Datei geschrieben wird:");
+    pane.add(outputHeader, makeHeadingGBC(0, gridy));
+
+    gridy++;
+    pane.add(fileComponents.getFileText(), makeGBC(0, gridy, GridBagConstraints.HORIZONTAL, 1));
+    pane.add(fileComponents.getChooseButton(), makeGBC(1, gridy, GridBagConstraints.NONE, 0));
+
+    gridy++;
+    JLabel runHeader = createHeading("4. Starte den Generator:");
+    pane.add(runHeader, makeHeadingGBC(0, gridy));
+
+    gridy++;
+    GridBagConstraints gbc = makeGBC(0, gridy, GridBagConstraints.BOTH, 1);
     gbc.gridwidth = 3;
     pane.add(generateButton, gbc);
     gbc.gridy++;
     pane.add(progressBar, gbc);
+  }
+
+  private JLabel createHeading(String text) {
+    JLabel heading = new JLabel(text);
+    Font font = heading.getFont();
+    heading.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 2));
+    return heading;
   }
 
   private GridBagConstraints makeGBC(int gridx, int gridy, int fill, double weightx) {
@@ -97,7 +128,14 @@ public class GeneratorGUI {
     gbc.gridy = gridy;
     gbc.weightx = weightx;
     gbc.fill = fill;
-    gbc.insets = new Insets(5,5,5,5);
+    gbc.insets = new Insets(5, 5, 5, 5);
+    return gbc;
+  }
+
+  private GridBagConstraints makeHeadingGBC(int gridx, int gridy) {
+    GridBagConstraints gbc = makeGBC(gridx, gridy, GridBagConstraints.BOTH, 1);
+    gbc.gridwidth = 3;
+    gbc.insets = new Insets(10,5,5,5);
     return gbc;
   }
 
@@ -130,25 +168,16 @@ public class GeneratorGUI {
     }
   }
 
-  private void createTitle() {
-    title = new JLabel("Schirizettel Generator", JLabel.CENTER);
+  private JLabel createTitle() {
+    JLabel title = new JLabel("Schirizettel Generator", JLabel.CENTER);
     Font font = title.getFont();
     title.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 3));
-  }
-
-  private void createReportFile() {
-    reportComponents = new FileComponents();
-    reportComponents.setDialogParent(frame);
-    reportComponents.setLabelText("PDF Formular (*.pdf): ");
-    reportComponents.setFileFilter(new FileNameExtensionFilter("PDF Formular", "pdf"));
-    reportComponents.createComponents();
-    reportComponents.setFile(Paths.get("./src/main/resources", "Vorlage.pdf").toAbsolutePath().toFile());
+    return title;
   }
 
   private void createDataFile() {
     dataComponents = new FileComponents();
     dataComponents.setDialogParent(frame);
-    dataComponents.setLabelText("Daten (*.csv): ");
     dataComponents.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
     dataComponents.createComponents();
   }
@@ -156,13 +185,12 @@ public class GeneratorGUI {
   private void createOutputFile() {
     fileComponents = new FileComponents();
     fileComponents.setDialogParent(frame);
-    fileComponents.setLabelText("Ausgabe (*.pdf): ");
     fileComponents.setFileFilter(new FileNameExtensionFilter("*.pdf", "pdf"));
     fileComponents.createComponents();
   }
 
   private void createGenerateButton() {
-    generateButton = new JButton("Generieren");
+    generateButton = new JButton("Starten");
     generateButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -177,12 +205,7 @@ public class GeneratorGUI {
 
   protected void generateReport() {
     progressBar.getModel();
-    final File reportFile = reportComponents.getFile();
-    if (!reportFile.exists()) {
-      JOptionPane.showMessageDialog(frame, "Bitte wähle eine Report-Datei aus.", frame.getTitle(),
-          JOptionPane.ERROR_MESSAGE);
-      return;
-    }
+    final URL reportURL = templatesBox.getChosenTemplate();
     final File dataFile = dataComponents.getFile();
     if (!dataFile.exists()) {
       JOptionPane.showMessageDialog(frame, "Bitte wähle deine Daten-Datei aus.", frame.getTitle(),
@@ -209,7 +232,7 @@ public class GeneratorGUI {
         try {
           ITextGenerator iTextGenerator = getITextGenerator();
           iTextGenerator.setDataStream(new FileInputStream(dataFile));
-          iTextGenerator.setTemplate(reportFile.toURI());
+          iTextGenerator.setTemplate(reportURL);
           iTextGenerator.setOutput(new FileOutputStream(outputFile));
           iTextGenerator.runReport();
           setProgressbarFinished();

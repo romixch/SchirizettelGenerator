@@ -23,6 +23,7 @@ repositories {
 dependencies {
     implementation("com.itextpdf:itextpdf:5.5.13.1")
     implementation("com.opencsv:opencsv:4.6")
+    implementation("org.apache.pdfbox:pdfbox:2.0.17")
 
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest:2.1")
