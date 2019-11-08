@@ -231,7 +231,7 @@ public class GeneratorGUI {
       public void run() {
         try {
           ITextGenerator iTextGenerator = getITextGenerator();
-          iTextGenerator.setDataStream(new FileInputStream(dataFile));
+          iTextGenerator.setDataSource(dataFile);
           iTextGenerator.setTemplate(reportURL);
           iTextGenerator.setOutput(new FileOutputStream(outputFile));
           iTextGenerator.runReport();

@@ -1,16 +1,14 @@
 package ch.romix.schirizettel.generator;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 
 public class DataTransformerTest {
 
@@ -29,7 +27,7 @@ public class DataTransformerTest {
 			source.writeNext(new String[] { "Rickenbach", "Langnau" });
 			source.writeNext(new String[] { "Langnau", "Ruswil" });
 		}
-		DataTransformer.transformDataToThreeDatasetsARow(new FileInputStream(srcFile), destFile);
+		DataTransformer.transformDataToThreeDatasetsARow(srcFile, destFile);
 
 		try (CSVReader result = new CSVReader(new InputStreamReader(new FileInputStream(destFile)), ',', '"')) {
 			String[] header = result.readNext();

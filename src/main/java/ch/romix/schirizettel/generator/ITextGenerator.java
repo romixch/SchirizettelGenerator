@@ -1,6 +1,5 @@
 package ch.romix.schirizettel.generator;
 
-import au.com.bytecode.opencsv.CSVReader;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
@@ -10,6 +9,9 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,9 +29,9 @@ public class ITextGenerator {
 
   private URL templateURL;
   private OutputStream outputStream;
-  private InputStream dataStream;
   private File datasource;
   private BoundedRangeModel progressbarModel;
+  private File dataFile;
 
   public ITextGenerator(BoundedRangeModel progressbarModel) {
     this.progressbarModel = progressbarModel;
@@ -40,10 +42,6 @@ public class ITextGenerator {
     this.templateURL = templateURL;
   }
 
-  public void setDataStream(InputStream dataStream) {
-    this.dataStream = dataStream;
-  }
-
   public void setOutput(OutputStream outputStream) {
     this.outputStream = outputStream;
   }
@@ -52,7 +50,7 @@ public class ITextGenerator {
     try {
       setProgressbarMaximum(3);
       setProgressbarValue(1);
-      DataTransformer.transformDataToThreeDatasetsARow(dataStream, datasource);
+      DataTransformer.transformDataToThreeDatasetsARow(dataFile, datasource);
       generateReport();
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -62,36 +60,40 @@ public class ITextGenerator {
   }
 
   private void generateReport() throws IOException, DocumentException {
-    CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(datasource)),
-        ',', '"');
-    List<File> pages = new ArrayList<>();
-    List<String[]> lines = csvReader.readAll();
-    String[] header = lines.get(0);
+    CSVParser parser = CSVFileTester.createSuitableParser(datasource);
+    try (FileInputStream fis = new FileInputStream(datasource)) {
+      try (InputStreamReader isr = new InputStreamReader(fis)) {
+        CSVReader csvReader = new CSVReaderBuilder(isr).withCSVParser(parser).build();
+        List<File> pages = new ArrayList<>();
+        List<String[]> lines = csvReader.readAll();
+        String[] header = lines.get(0);
 
-    for (int i = 1; i < lines.size(); i++) {
-      String[] line = lines.get(i);
+        for (int i = 1; i < lines.size(); i++) {
+          String[] line = lines.get(i);
 
-      File tempPdf = File.createTempFile("temp_", ".pdf", new File("./"));
-      pages.add(tempPdf);
-      tempPdf.deleteOnExit();
-      try (OutputStream outputStream = new FileOutputStream(tempPdf)) {
+          File tempPdf = File.createTempFile("temp_", ".pdf", new File("./"));
+          pages.add(tempPdf);
+          tempPdf.deleteOnExit();
+          try (OutputStream outputStream = new FileOutputStream(tempPdf)) {
 
-        PdfReader pdfReader = new PdfReader(templateURL.openStream());
-        PdfStamper pdfStamper = new PdfStamper(pdfReader, outputStream);
-        AcroFields form = pdfStamper.getAcroFields();
-        form.setGenerateAppearances(true);
+            PdfReader pdfReader = new PdfReader(templateURL.openStream());
+            PdfStamper pdfStamper = new PdfStamper(pdfReader, outputStream);
+            AcroFields form = pdfStamper.getAcroFields();
+            form.setGenerateAppearances(true);
 
-        for (int fieldId = 0; fieldId < header.length; fieldId++) {
-          form.setField(header[fieldId], line[fieldId]);
+            for (int fieldId = 0; fieldId < header.length; fieldId++) {
+              form.setField(header[fieldId], line[fieldId]);
+            }
+
+            pdfStamper.setFormFlattening(true);
+            pdfStamper.close();
+            pdfReader.close();
+          }
         }
-
-        pdfStamper.setFormFlattening(true);
-        pdfStamper.close();
-        pdfReader.close();
+        mergePages(pages);
       }
     }
 
-    mergePages(pages);
   }
 
   private void mergePages(List<File> pages) throws DocumentException, IOException {
@@ -148,5 +150,9 @@ public class ITextGenerator {
         progressbarModel.setValue(progressbarModel.getMaximum());
       }
     });
+  }
+
+  public void setDataSource(File dataFile) {
+    this.dataFile = dataFile;
   }
 }
