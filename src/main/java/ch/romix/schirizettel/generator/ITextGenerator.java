@@ -21,12 +21,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.BoundedRangeModel;
 import javax.swing.SwingUtilities;
 
 public class ITextGenerator {
 
+  String[] csvHeaders;
+  AcroFields templateFields;
   private URL templateURL;
   private OutputStream outputStream;
   private File datasource;
@@ -59,6 +65,16 @@ public class ITextGenerator {
     }
   }
 
+  public GenerationHint analyzeGeneration() {
+    Set<String> unusedCsvHeaders = new HashSet<>(Arrays.asList(csvHeaders));
+    templateFields.getFields().keySet().forEach(unusedCsvHeaders::remove);
+    unusedCsvHeaders = unusedCsvHeaders.stream().map(s -> s.substring(0, s.length() - 1))
+        .collect(Collectors.toSet());
+    Set<String> unusedtemplateFields = templateFields.getFields().keySet();
+    Arrays.stream(csvHeaders).forEach(unusedtemplateFields::remove);
+    return new GenerationHint(unusedCsvHeaders, unusedtemplateFields);
+  }
+
   private void generateReport() throws IOException, DocumentException {
     CSVParser parser = CSVFileTester.createSuitableParser(datasource);
     try (FileInputStream fis = new FileInputStream(datasource)) {
@@ -66,7 +82,7 @@ public class ITextGenerator {
         CSVReader csvReader = new CSVReaderBuilder(isr).withCSVParser(parser).build();
         List<File> pages = new ArrayList<>();
         List<String[]> lines = csvReader.readAll();
-        String[] header = lines.get(0);
+        csvHeaders = lines.get(0);
 
         for (int i = 1; i < lines.size(); i++) {
           String[] line = lines.get(i);
@@ -78,11 +94,11 @@ public class ITextGenerator {
 
             PdfReader pdfReader = new PdfReader(templateURL.openStream());
             PdfStamper pdfStamper = new PdfStamper(pdfReader, outputStream);
-            AcroFields form = pdfStamper.getAcroFields();
-            form.setGenerateAppearances(true);
+            templateFields = pdfStamper.getAcroFields();
+            templateFields.setGenerateAppearances(true);
 
-            for (int fieldId = 0; fieldId < header.length; fieldId++) {
-              form.setField(header[fieldId], line[fieldId]);
+            for (int fieldId = 0; fieldId < csvHeaders.length; fieldId++) {
+              templateFields.setField(csvHeaders[fieldId], line[fieldId]);
             }
 
             pdfStamper.setFormFlattening(true);

@@ -236,6 +236,11 @@ public class GeneratorGUI {
           iTextGenerator.setOutput(new FileOutputStream(outputFile));
           iTextGenerator.runReport();
           setProgressbarFinished();
+          GenerationHint generationHint = iTextGenerator.analyzeGeneration();
+          if (!generationHint.perfect) {
+            String message = "Beim Generieren ist was aufgefallen:\n" + generationHint.getHints();
+            JOptionPane.showMessageDialog(frame, message, "Hinweise", JOptionPane.WARNING_MESSAGE);
+          }
           Desktop.getDesktop().open(outputFile);
 
         } catch (Exception e) {
