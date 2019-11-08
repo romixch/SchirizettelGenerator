@@ -9,7 +9,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,7 +44,6 @@ public class GeneratorGUI {
     executor = Executors.newFixedThreadPool(1);
     chooseLookAndFeel();
     frame = new JFrame("Schirizettel Generator");
-    frame.setSize(800, 700);
     createTitle();
     createDataFile();
     createOutputFile();
@@ -53,6 +51,7 @@ public class GeneratorGUI {
     createProgressBar();
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     layout();
+    frame.pack();
     frame.setVisible(true);
   }
 
