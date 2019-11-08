@@ -2,6 +2,7 @@ package ch.romix.schirizettel.generator;
 
 import ch.romix.schirizettel.generator.TemplatesBox.TemplateListener;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -235,6 +236,7 @@ public class GeneratorGUI {
           iTextGenerator.setOutput(new FileOutputStream(outputFile));
           iTextGenerator.runReport();
           setProgressbarFinished();
+          Desktop.getDesktop().open(outputFile);
 
         } catch (Exception e) {
           setProgressbarError(e);
