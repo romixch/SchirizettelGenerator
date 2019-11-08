@@ -9,18 +9,13 @@ Entpacke die Zip-Datei und starte die Applikation im `bin`-Verzeichnis.
 Ein Fenster öffnet sich. Darin kannst du folgende drei Dinge
 auswählen:
 
-- Report:  Vorlage, wie die Zettel aussehen sollen. Ich habe bereits zwei Vorlagen erstellt. 
-  Es sind dies [schirizettel.rptdesign](https://github.com/romixch/SchirizettelGenerator/raw/master/schirizettel.rptdesign)
-  und [schirizettel_ohne_tenue.rptdesign](https://github.com/romixch/SchirizettelGenerator/raw/master/schirizettel_ohne_tenue.rptdesign)
+- Vorlage:  Vorlage, wie die Zettel aussehen sollen. Ich habe bereits zwei Vorlagen erstellt. 
+  Du kannst aber gerne deine eigene Vorlage erstellen. Beispiele findest du hier:
+  [Vorlagen](https://github.com/romixch/SchirizettelGenerator/raw/master/src/main/resources/)
+  Erstelle im Tool deiner Wahl einfach ein PDF-Formular, das dieser Generator dann ausfüllt. 
+  Falls du hilfe dabei brauchst, meldest du dich bei der unten erwähnten Mail-Adresse.
 - Daten:   Eine CSV-Datei, welche die zu druckenden Daten enthällt. Ein Beispiel dafür findest du auch hier:
   [BeispielDaten.csv](https://github.com/romixch/SchirizettelGenerator/raw/master/BeispielDaten.csv)
 - Ausgabe: in diese PDF-Datei wird das Resultat geschrieben.
-
-Probleme:
-Wenn das produzierte PDF leer ist, solltest du das Format deiner csv-
-Datei überprüfen.
-
-Tipp:
-Mit Eclipse-Birt (http://www.eclipse.org/birt/) kannst du die Vorlage anpassen.
 
 Für mehr Infos kontaktiere roman.schaller@gmail.com
