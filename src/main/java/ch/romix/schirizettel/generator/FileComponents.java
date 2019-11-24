@@ -28,9 +28,9 @@ public class FileComponents {
 		fileText.setText(file.getAbsolutePath());
 	}
 
-	public void createComponents() {
+	public void createComponents(String fileChooseText) {
 		fileText = new JTextField();
-		chooseButton = new JButton("Datei öffnen...");
+		chooseButton = new JButton(fileChooseText);
 		chooseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

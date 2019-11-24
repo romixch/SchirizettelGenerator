@@ -1,15 +1,21 @@
 package ch.romix.schirizettel.generator;
 
+import com.itextpdf.text.pdf.PdfReader;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,6 +26,7 @@ public class TemplatesBox extends JPanel implements ActionListener {
   private TemplateListener templateListener;
   private ButtonGroup templateButtonGroup;
   private URL chosenTemplate;
+  private JLabel templateDescription;
 
   public TemplatesBox(TemplateListener templateListener) {
     super();
@@ -45,9 +52,18 @@ public class TemplatesBox extends JPanel implements ActionListener {
     templateButtonGroup.add(ownButton);
     ownButton.setActionCommand("");
     ownButton.addActionListener(this);
-
     add(ownButton);
+
+    templateDescription = new JLabel();
+    add(templateDescription);
+
     fireTemplateChanged(standardButton.getActionCommand());
+  }
+
+  private void updateTemplateFields(Set<String> fields) {
+    templateDescription.setText(
+        "<html><br/>Folgende Felder kannst du mit der CSV-Datei befüllen:<br/><pre>" + String
+            .join(", ", fields) + "</pre></html>");
   }
 
   private URL chooseFile() {
@@ -84,11 +100,30 @@ public class TemplatesBox extends JPanel implements ActionListener {
     } else {
       chosenTemplate = this.getClass().getClassLoader().getResource(resourceName);
     }
+    updateTemplateFields(readTemplateFields(chosenTemplate));
     templateListener.onTemplateChanged(chosenTemplate);
   }
 
   public URL getChosenTemplate() {
     return chosenTemplate;
+  }
+
+  private Set<String> readTemplateFields(URL url) {
+    try {
+      PdfReader pdfReader = new PdfReader(url.openStream());
+      Set<String> allFields = pdfReader.getAcroFields().getFields().keySet();
+      return allFields.stream().map(this::stripNumbers).collect(Collectors.toSet());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return Collections.emptySet();
+    }
+  }
+
+  private String stripNumbers(String s) {
+    while (s.charAt(s.length() - 1) >= '0' && s.charAt(s.length() - 1) <= '9') {
+      s = s.substring(0, s.length() - 1);
+    }
+    return s;
   }
 
   public interface TemplateListener {

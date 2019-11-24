@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,7 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,9 +32,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GeneratorGUI {
 
-  private JFrame frame;
-
   TemplatesBox templatesBox;
+  private JFrame frame;
   private FileComponents dataComponents;
   private FileComponents fileComponents;
   private ITextGenerator iTextGenerator;
@@ -45,6 +46,7 @@ public class GeneratorGUI {
     executor = Executors.newFixedThreadPool(1);
     chooseLookAndFeel();
     frame = new JFrame("Schirizettel Generator");
+    setAppIcon();
     createTitle();
     createDataFile();
     createOutputFile();
@@ -59,6 +61,12 @@ public class GeneratorGUI {
   public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
       IllegalAccessException, UnsupportedLookAndFeelException {
     new GeneratorGUI();
+  }
+
+  private void setAppIcon() {
+    URL piktogramURL = this.getClass().getClassLoader().getResource("piktogram.png");
+    Image image = new ImageIcon(piktogramURL).getImage();
+    frame.setIconImage(image);
   }
 
   private void layout() {
@@ -82,6 +90,7 @@ public class GeneratorGUI {
       @Override
       public void onTemplateChanged(URL url) {
         shippedTemplatesGUI.loadTemplate(url);
+        frame.pack();
       }
     });
     pane.add(templatesBox, makeGBC(0, gridy, GridBagConstraints.HORIZONTAL, 1));
@@ -96,7 +105,7 @@ public class GeneratorGUI {
     pane.add(dataComponents.getChooseButton(), makeGBC(1, gridy, GridBagConstraints.NONE, 0));
 
     gridy++;
-    JLabel outputHeader = createHeading("3. Wähle, wohin die PDF-Datei geschrieben wird:");
+    JLabel outputHeader = createHeading("3. Wähle, wohin die PDF-Datei gespeichert wird:");
     pane.add(outputHeader, makeHeadingGBC(0, gridy));
 
     gridy++;
@@ -135,7 +144,7 @@ public class GeneratorGUI {
   private GridBagConstraints makeHeadingGBC(int gridx, int gridy) {
     GridBagConstraints gbc = makeGBC(gridx, gridy, GridBagConstraints.BOTH, 1);
     gbc.gridwidth = 3;
-    gbc.insets = new Insets(10,5,5,5);
+    gbc.insets = new Insets(10, 5, 5, 5);
     return gbc;
   }
 
@@ -179,14 +188,14 @@ public class GeneratorGUI {
     dataComponents = new FileComponents();
     dataComponents.setDialogParent(frame);
     dataComponents.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
-    dataComponents.createComponents();
+    dataComponents.createComponents("Datei öffnen...");
   }
 
   private void createOutputFile() {
     fileComponents = new FileComponents();
     fileComponents.setDialogParent(frame);
     fileComponents.setFileFilter(new FileNameExtensionFilter("*.pdf", "pdf"));
-    fileComponents.createComponents();
+    fileComponents.createComponents("Speichern unter...");
   }
 
   private void createGenerateButton() {
