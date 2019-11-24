@@ -1,5 +1,7 @@
 # Schirizettel Generator
 
+![Screenshot](Screenshot.png)
+
 Diese Applikation hilft dir beim Erstellen von Korbball-Resultate-Zettel.
 Als Voraussetzung muss Java ab der Version 8 installiert sein. Um die
 Resultate-Zettel zu erstellen, lade das neuste Release hier herunter:
