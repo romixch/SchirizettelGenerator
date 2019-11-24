@@ -68,7 +68,7 @@ public class FileComponents {
 			File file = new File(fileString);
 			chooser.setCurrentDirectory(file);
 		} else {
-			chooser.setCurrentDirectory(getUserDir());
+			chooser.setCurrentDirectory(chooser.getFileSystemView().getDefaultDirectory());
 		}
 	}
 
