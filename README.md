@@ -27,4 +27,9 @@ auswählen:
   [BeispielDaten.csv](https://github.com/romixch/SchirizettelGenerator/raw/master/BeispielDaten.csv)
 - Ausgabe: in diese PDF-Datei wird das Resultat geschrieben.
 
+
+## Download
+
+Gehe dazu in den [Relese-Bereich](https://github.com/romixch/SchirizettelGenerator/releases) von GitHub.
+
 Für mehr Infos kontaktiere roman.schaller@gmail.com
