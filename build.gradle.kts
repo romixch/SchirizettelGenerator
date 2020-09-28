@@ -40,9 +40,3 @@ tasks.withType<CreateStartScripts>(CreateStartScripts::class.java) {
         windowsScript.writeText(text)
     }
 }
-
-// This only works for Linux. It creates an executable binary file.
-graal {
-    outputName("schirizettelGenerator")
-    mainClass("ch.romix.schirizettel.generator.GeneratorGUI")
-}
