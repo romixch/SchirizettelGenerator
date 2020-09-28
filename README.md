@@ -35,3 +35,17 @@ hat Stefan Etter auf Youtube gestellt: [Schiedsrichterzettel Generator](https://
 Gehe dazu in den [Relese-Bereich](https://github.com/romixch/SchirizettelGenerator/releases) von GitHub.
 
 Für mehr Infos kontaktiere roman.schaller@gmail.com
+
+## Selber Kompilieren
+
+Für geübte Java-Entwickler:
+
+Starten:
+```shell script
+./gradlew run
+```
+
+Distribution erstellen:
+```shell script
+./gradlew distZip
+```

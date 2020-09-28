@@ -11,16 +11,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.parser.txt.CharsetDetector;
+import org.apache.tika.parser.txt.CharsetMatch;
 
 public class DataTransformer {
 
-  public static void transformDataToThreeDatasetsARow(File datasource, File destinationFile)
+  public static void transformDataToThreeDatasetsARow(File dataFile, File destinationFile)
       throws IOException {
-    CSVParser parser = CSVFileTester.createSuitableParser(datasource);
-    try (FileInputStream fis = new FileInputStream(datasource)) {
-      try (InputStreamReader isr = new InputStreamReader(fis)) {
+    CSVParser parser = CSVFileTester.createSuitableParser(dataFile);
+    Charset charset = detectCharset(dataFile);
+    try (FileInputStream fis = new FileInputStream(dataFile)) {
+      try (InputStreamReader isr = new InputStreamReader(fis, charset)) {
         CSVReader csvReader = new CSVReaderBuilder(isr).withCSVParser(parser).build();
         try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
           try (OutputStreamWriter osw = new OutputStreamWriter(fos)) {
@@ -50,6 +56,17 @@ public class DataTransformer {
           }
         }
       }
+    }
+  }
+
+  private static Charset detectCharset(File dataFile) throws IOException {
+    try {
+      byte[] bytes = FileUtils.readFileToByteArray(dataFile);
+      CharsetMatch charsetMatch = new CharsetDetector().setText(bytes).detect();
+      String charset = charsetMatch.getName();
+      return Charset.forName(charset);
+    } catch (Exception e) {
+      return StandardCharsets.UTF_8;
     }
   }
 
