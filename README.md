@@ -27,6 +27,8 @@ auswählen:
   [BeispielDaten.csv](https://github.com/romixch/SchirizettelGenerator/raw/master/BeispielDaten.csv)
 - Ausgabe: in diese PDF-Datei wird das Resultat geschrieben.
 
+Eine detaillierte Beschreibung, wie du deine Schirizettel damit generieren kannst,
+hat Stefan Etter auf Youtube gestellt: [Schiedsrichterzettel Generator](https://www.youtube.com/watch?v=OAVRBeTbJpw&feature=youtu.be)
 
 ## Download
 
