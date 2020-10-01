@@ -2,6 +2,7 @@
 plugins {
     java
     id("application")
+    id("com.hendraanggrian.packr") version ("0.1")
 }
 
 java {
@@ -12,6 +13,8 @@ java {
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
     }
 }
 
@@ -39,4 +42,19 @@ tasks.withType<CreateStartScripts>(CreateStartScripts::class.java) {
         text = text.replaceFirst(Regex("(set CLASSPATH=%APP_HOME%\\\\lib\\\\).*"), "set CLASSPATH=%APP_HOME%\\\\lib\\\\*")
         windowsScript.writeText(text)
     }
+}
+
+packr {
+
+    executable = "Schirizettelgenerator"
+    classpath("build/libs/SchirizettelGenerator.jar")
+    verbose = true
+    outputDirectory = "./build/packr"
+    mainClass = "ch.romix.schirizettel.generator.GeneratorGUI"
+
+    linux64()
+}
+
+tasks.named("packLinux64") {
+    dependsOn(":jar")
 }

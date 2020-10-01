@@ -110,6 +110,7 @@ public class TemplatesBox extends JPanel implements ActionListener {
 
   private Set<String> readTemplateFields(URL url) {
     try {
+      System.out.println("packr lets the app crash at the following line");
       PdfReader pdfReader = new PdfReader(url.openStream());
       Set<String> allFields = pdfReader.getAcroFields().getFields().keySet();
       return allFields.stream().map(this::stripNumbers).collect(Collectors.toSet());
