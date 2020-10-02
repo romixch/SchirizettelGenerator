@@ -33,6 +33,11 @@ hat Stefan Etter auf Youtube gestellt: [Schiedsrichterzettel Generator](https://
 ## Download
 
 Gehe dazu in den [Relese-Bereich](https://github.com/romixch/SchirizettelGenerator/releases) von GitHub.
+Dort findest du eine Zip-Datei zum Download. Diese kannst du auf deiner Maschine entpacken und das 
+darin enthaltene exe-File ausführen. Windows wird dich fragen, ob du der Datei wirklich vertrauen
+möchtest. Klicke auf *Weitere Informationen* und *Trotzdem ausführen*:
+
+![Unbekannte Applikation](windows_unknown_app.png)
 
 Für mehr Infos kontaktiere roman.schaller@gmail.com
 
@@ -47,5 +52,5 @@ Starten:
 
 Distribution erstellen:
 ```shell script
-./gradlew distZip
+./gradlew packageWindows
 ```
