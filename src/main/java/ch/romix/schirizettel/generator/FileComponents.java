@@ -8,16 +8,17 @@ import java.nio.file.Paths;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FilenameUtils;
 
 public class FileComponents {
 	private JTextField fileText;
 	private JButton chooseButton;
 	private Component dialogParent;
-	private FileFilter fileFilter;
+	private FileNameExtensionFilter fileFilter;
 
-	public void setFileFilter(FileFilter fileFilter) {
-		this.fileFilter = fileFilter;
+	public void setFileExtensionFilter(FileNameExtensionFilter extensionFilter) {
+		this.fileFilter = extensionFilter;
 	}
 
 	public void setDialogParent(Component dialogParent) {
@@ -59,6 +60,9 @@ public class FileComponents {
 		int returnCode = chooser.showOpenDialog(dialogParent);
 		if (returnCode == JFileChooser.APPROVE_OPTION) {
 			File reportFile = chooser.getSelectedFile();
+			if (!FilenameUtils.getExtension(reportFile.getName()).equalsIgnoreCase(fileFilter.getExtensions()[0])) {
+				reportFile = new File(reportFile.getName() + "." + fileFilter.getExtensions()[0]);
+			}
 			fileText.setText(reportFile.getAbsolutePath());
 		}
 	}

@@ -187,14 +187,14 @@ public class GeneratorGUI {
   private void createDataFile() {
     dataComponents = new FileComponents();
     dataComponents.setDialogParent(frame);
-    dataComponents.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
+    dataComponents.setFileExtensionFilter(new FileNameExtensionFilter("*.csv", "csv"));
     dataComponents.createComponents("Datei öffnen...");
   }
 
   private void createOutputFile() {
     fileComponents = new FileComponents();
     fileComponents.setDialogParent(frame);
-    fileComponents.setFileFilter(new FileNameExtensionFilter("*.pdf", "pdf"));
+    fileComponents.setFileExtensionFilter(new FileNameExtensionFilter("*.pdf", "pdf"));
     fileComponents.createComponents("Speichern unter...");
   }
 
